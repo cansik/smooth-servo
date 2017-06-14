@@ -41,6 +41,8 @@ class SmoothServo
   {
   }
 
+  long start = 0;
+
   public void update()
   {
     //  check if we need a new task from the queue
@@ -59,6 +61,8 @@ class SmoothServo
       gp = 0;
       s1 = -1;
       s2 = -1;
+
+      start = millis();
     }
 
     // update task
@@ -76,6 +80,7 @@ class SmoothServo
     // check if task is finished
     if (task.status == ServoTaskStatus.FINISHED || task.status == ServoTaskStatus.CANCELED)
     {
+      println("took: " + (millis() - start) + "ms");
       println("task finished!");
       task = null;
     }

@@ -79,8 +79,6 @@ class ServoTask
     println("acceleration: " + acceleration);
     println("maxVelocity: " + velocity);
 
-    println("duration: " + duration);
-
     println("AccP: " + accelerationPath);
     println("LinP: " + linearMotionPath);
     println("DecP: " + decelerationPath);
@@ -99,6 +97,9 @@ class ServoTask
     println("AccS: " + accelerationTarget);
     println("LinS: " + linearMotionTarget);
     println("DecS: " + decelerationTarget);
+
+    println("---");
+    println("duration: " + duration);
   }
 
   public int nextPosition(int currentPosition)
@@ -141,7 +142,7 @@ class ServoTask
       println("changing to linear motion state");
     }
 
-    return Math.round(easeInSine(t, b, c, d));
+    return Math.round(easeInQuad(t, b, c, d));
   }
 
   public int linearMotion()
@@ -180,7 +181,7 @@ class ServoTask
       status = ServoTaskStatus.FINISHED;
     }
 
-    return Math.round(easeOutSine(t, b, c, d));
+    return Math.round(easeOutQuad(t, b, c, d));
   }
 
   private int getSign(int n)

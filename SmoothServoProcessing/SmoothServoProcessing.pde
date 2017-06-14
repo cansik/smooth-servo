@@ -41,7 +41,8 @@ void draw()
 
 void drawGraph()
 {
-  float zero = height / 5 * 4;
+  float zero = height / 7 * 6;
+  float maxH = zero - 100;
   float border = 20;
   float maxW = width - 2 * border;
 
@@ -54,7 +55,7 @@ void drawGraph()
   for (int i = 0; i < gp; i++)
   {
     float x = map(i, 0, gp, border, width - border);
-    float y = zero - graph[i];
+    float y = map(graph[i], 0, 180, zero, maxH);
 
     //draw line
     stroke(255, 0, 0);
