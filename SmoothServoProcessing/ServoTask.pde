@@ -1,32 +1,37 @@
 class ServoTask
 {
-  final int ACCELERATION_TIME = 250;
-  final int DECELERATION_TIME = 250;
-
-  final int ACCELERATION_PATH = 20;
-  final int DECELERATION_PATH = 20;
-
   ServoState state;
   ServoTaskStatus status = ServoTaskStatus.CREATED;
+
+  float velocity;
+  float acceleration;
 
   int startPosition;
   int targetPosition;
 
-  int accelerationTarget;
-  int linearMotionTarget;
-  int decelerationTarget;
+  float accelerationTarget;
+  float linearMotionTarget;
+  float decelerationTarget;
 
-  int duration;
+  float duration;
   int startTime;
 
-  int linearMotionTime;
+  float accelerationTime;
+  float linearMotionTime;
+  float decelerationTime;
+
+  float accelerationPath;
+  float linearMotionPath;
+  float decelerationPath;
 
   int direction;
 
-  public ServoTask(int targetPosition, int duration)
+  public ServoTask(int targetPosition, float velocity, float acceleration)
   {
     this.targetPosition = targetPosition;
-    this.duration = duration;
+    this.velocity = velocity;
+    this.acceleration = acceleration;
+
     this.state = ServoState.ACCELERATION;
   }
 
@@ -37,24 +42,53 @@ class ServoTask
     this.startPosition = startPosition;
     this.startTime = millis();
 
+    // caluclate time and path
+    accelerationTime = calculateMotionTime(0, velocity, acceleration);
+    decelerationTime = calculateMotionTime(velocity, 0, acceleration);
+
+    accelerationPath = calculateMotionPath(0, accelerationTime, acceleration);
+    decelerationPath = calculateMotionPath(velocity, decelerationTime, acceleration);
+
+    duration = 0;
+
     // calculate positions
     int pathLength = abs(targetPosition - startPosition);
     direction = getSign(targetPosition - startPosition);
 
-    int linearMotionPath = max(0, pathLength - (ACCELERATION_PATH + DECELERATION_PATH));
-    linearMotionTime = duration - (ACCELERATION_TIME + DECELERATION_TIME);
+    linearMotionPath = max(0, pathLength - (accelerationPath + decelerationPath));
+    linearMotionTime = linearMotionPath / velocity;
 
-    accelerationTarget = startPosition + (direction * ACCELERATION_PATH);
+    duration = accelerationTime + linearMotionTime + decelerationTime;
+
+    accelerationTarget = startPosition + (direction * accelerationPath);
     linearMotionTarget = accelerationTarget + (direction * linearMotionPath);
-    decelerationTarget = linearMotionTarget + (direction * DECELERATION_PATH);
+    decelerationTarget = linearMotionTarget + (direction * decelerationPath);
 
     println("New Task:");
+
+    println("acceleration: " + acceleration);
+    println("maxVelocity: " + velocity);
+
+    println("duration: " + duration);
+
+    println("AccP: " + accelerationPath);
+    println("LinP: " + linearMotionPath);
+    println("DecP: " + decelerationPath);
+
+    println("----");
+
+    println("AccT: " + accelerationTime);
+    println("LinT: " + linearMotionTime);
+    println("DecT: " + decelerationTime);
+
+    println("----");
+
     println("Start: " + startPosition);
     println("Target: " + targetPosition);
 
-    println("Acc: " + accelerationTarget);
-    println("Lin: " + linearMotionTarget);
-    println("Dec: " + decelerationTarget);
+    println("AccS: " + accelerationTarget);
+    println("LinS: " + linearMotionTarget);
+    println("DecS: " + decelerationTarget);
   }
 
   public int nextPosition(int currentPosition)
@@ -78,15 +112,16 @@ class ServoTask
 
   public int acceleration()
   {
-    int t = millis() - startTime;
-    int b = startPosition;
-    int c = accelerationTarget - startPosition;
-    int d = ACCELERATION_TIME;
+    float t = millis() - startTime;
+    float b = startPosition;
+    float c = accelerationTarget - startPosition;
+    float d = accelerationTime;
 
     // check state switch
     if (t >= d)
     {
       state = ServoState.LINEARMOTION;
+      //status = ServoTaskStatus.FINISHED;
       println("changing to linear motion state");
     }
 
@@ -95,15 +130,16 @@ class ServoTask
 
   public int linearMotion()
   {
-    int t = millis() - (startTime + ACCELERATION_TIME);
-    int b = accelerationTarget;
-    int c = linearMotionTarget - accelerationTarget;
-    int d = linearMotionTime;
+    float t = millis() - (startTime + accelerationTime);
+    float b = accelerationTarget;
+    float c = linearMotionTarget - accelerationTarget;
+    float d = linearMotionTime;
 
     // check state switch
     if (t >= d)
     {
       state = ServoState.DECELERATION;
+      //status = ServoTaskStatus.FINISHED;
       println("changing to deceleration state");
     }
 
@@ -112,10 +148,10 @@ class ServoTask
 
   public int deceleration()
   {
-    int t = millis() - (startTime + ACCELERATION_TIME + linearMotionTime);
-    int b = linearMotionTarget;
-    int c = decelerationTarget - linearMotionTarget;
-    int d = DECELERATION_TIME;
+    float t = millis() - (startTime + accelerationTime + linearMotionTime);
+    float b = linearMotionTarget;
+    float c = decelerationTarget - linearMotionTarget;
+    float d = decelerationTime;
 
     // check state switch
     if (t >= d)
@@ -129,5 +165,15 @@ class ServoTask
   private int getSign(int n)
   {
     return n >= 0 ? 1 : -1;
+  }
+
+  private float calculateMotionTime(float vI, float vF, float a)
+  {
+    return Math.abs((vF - vI) / a);
+  }
+
+  private float calculateMotionPath(float vI, float t, float a)
+  {
+    return (float)((vI * t) + (0.5 * a * Math.pow(t, 2)));
   }
 }

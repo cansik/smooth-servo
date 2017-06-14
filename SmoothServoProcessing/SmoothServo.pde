@@ -7,18 +7,34 @@ class SmoothServo
 
   int servoPosition;
 
-  public SmoothServo(Servo servo)
+  // max speed per seconds
+  float maxVelocity;
+  float maxAcceleration;
+
+  public SmoothServo(Servo servo, float maxVelocity, float maxAcceleration)
   {
     this.servo = servo;
+    this.maxVelocity = maxVelocity;
+    this.maxAcceleration = maxAcceleration;
 
     // init servo to have same position
     servoPosition = 90;
     servo.write(servoPosition);
   }
 
-  public void moveTo(int targetPosition, int time)
+  public void moveTo(int targetPosition)
   {
-    tasks.enqueue(new ServoTask(targetPosition, time));
+    moveTo(targetPosition, maxVelocity);
+  }
+
+  public void moveTo(int targetPosition, float velocity)
+  {
+    moveTo(targetPosition, maxVelocity, maxAcceleration);
+  }
+
+  public void moveTo(int targetPosition, float velocity, float acceleration)
+  {
+    tasks.enqueue(new ServoTask(targetPosition, velocity * maxVelocity, acceleration * maxAcceleration));
   }
 
   public void stop()
@@ -47,12 +63,12 @@ class SmoothServo
     // update task
     servoPosition = task.nextPosition(servoPosition);
     servo.write(servoPosition);
-    
+
     // check if task is finished
-    if(task.status == ServoTaskStatus.FINISHED || task.status == ServoTaskStatus.CANCELED)
+    if (task.status == ServoTaskStatus.FINISHED || task.status == ServoTaskStatus.CANCELED)
     {
-       println("task finished!");
-       task = null; 
+      println("task finished!");
+      task = null;
     }
   }
 }
