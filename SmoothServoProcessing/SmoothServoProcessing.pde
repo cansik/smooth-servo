@@ -1,3 +1,6 @@
+import oscP5.*;
+import netP5.*;
+
 Servo xAxis = new Servo();
 SmoothServo smoothXAxis;
 
@@ -7,12 +10,20 @@ int gp = 0;
 int s1 = -1;
 int s2 = -1;
 
+OscP5 oscP5;
+NetAddress broadCast;
+
 void setup()
 {
   size(500, 500, FX2D);
 
+  // setup osc
+  oscP5 = new OscP5(this, 8000);
+
+  broadCast = new NetAddress("172.20.10.2", 8000);
+
   // max speed = 180 ms per 60° -> 0.3333° per 1ms
-  smoothXAxis = new SmoothServo(xAxis, 60.0 / 180.0, 0.01);
+  smoothXAxis = new SmoothServo(xAxis, 60.0 / 180.0, 0.03);
 }
 
 void draw()
