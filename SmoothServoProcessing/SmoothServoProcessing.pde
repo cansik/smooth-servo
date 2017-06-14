@@ -85,5 +85,5 @@ void keyPressed()
 
   println("Moving to " + target + "°");
 
-  smoothXAxis.moveTo(target, 0.5);
+  smoothXAxis.moveTo(target, 0.25);
 }

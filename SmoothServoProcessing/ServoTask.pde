@@ -58,6 +58,16 @@ class ServoTask
     linearMotionPath = max(0, pathLength - (accelerationPath + decelerationPath));
     linearMotionTime = linearMotionPath / velocity;
 
+    // recalculate accelerationTime if no linear motion possible
+    if (linearMotionPath == 0)
+    {
+      accelerationPath = pathLength / 2;
+      decelerationPath = pathLength / 2;
+
+      accelerationTime = calculateMotionTime(acceleration, accelerationPath);
+      decelerationTime = calculateMotionTime(acceleration, decelerationPath);
+    }
+
     duration = accelerationTime + linearMotionTime + decelerationTime;
 
     accelerationTarget = startPosition + (direction * accelerationPath);
@@ -93,6 +103,13 @@ class ServoTask
 
   public int nextPosition(int currentPosition)
   {
+    // fix for 0 or 1 motion
+    if (abs(targetPosition - startPosition) < 2)
+    {
+      status = ServoTaskStatus.FINISHED;
+      return targetPosition;
+    }
+
     switch(state)
     {
     case ACCELERATION:
@@ -121,7 +138,6 @@ class ServoTask
     if (t >= d)
     {
       state = ServoState.LINEARMOTION;
-      //status = ServoTaskStatus.FINISHED;
       println("changing to linear motion state");
     }
 
@@ -139,8 +155,13 @@ class ServoTask
     if (t >= d)
     {
       state = ServoState.DECELERATION;
-      //status = ServoTaskStatus.FINISHED;
       println("changing to deceleration state");
+    }
+
+    if (d <= 0)
+    {
+      // skip linear motion
+      return deceleration();
     }
 
     return Math.round(linearTween(t, b, c, d));
@@ -174,6 +195,11 @@ class ServoTask
 
   private float calculateMotionPath(float vI, float t, float a)
   {
-    return (float)((vI * t) + (0.5 * a * Math.pow(t, 2)));
+    return Math.round(((vI * t) + (0.5 * a * Math.pow(t, 2))));
+  }
+
+  private float calculateMotionTime(float a, float d)
+  {
+    return Math.round(Math.sqrt(2 * d / a));
   }
 }
