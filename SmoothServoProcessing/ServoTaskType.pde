@@ -1,0 +1,6 @@
+enum ServoTaskType
+{
+  ACCELERATION,
+  LINEARMOTION,
+  DECELERATION
+}
