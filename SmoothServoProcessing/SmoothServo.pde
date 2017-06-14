@@ -58,11 +58,24 @@ class SmoothServo
       // get new task from queue
       task = tasks.dequeue();
       task.start(servoPosition);
+
+      graph = new int[2000];
+      gp = 0;
+      s1 = -1;
+      s2 = -1;
     }
 
     // update task
     servoPosition = task.nextPosition(servoPosition);
     servo.write(servoPosition);
+
+    if (s1 == -1 && task.state == ServoState.LINEARMOTION)
+      s1 = gp;
+
+    if (s2 == -1 && task.state == ServoState.DECELERATION)
+      s2 = gp;
+
+    graph[gp++] = servoPosition;
 
     // check if task is finished
     if (task.status == ServoTaskStatus.FINISHED || task.status == ServoTaskStatus.CANCELED)

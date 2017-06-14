@@ -47,7 +47,7 @@ class ServoTask
     decelerationTime = calculateMotionTime(velocity, 0, acceleration);
 
     accelerationPath = calculateMotionPath(0, accelerationTime, acceleration);
-    decelerationPath = calculateMotionPath(velocity, decelerationTime, acceleration);
+    decelerationPath = calculateMotionPath(velocity, decelerationTime, acceleration * -1);
 
     duration = 0;
 
@@ -125,7 +125,7 @@ class ServoTask
       println("changing to linear motion state");
     }
 
-    return Math.round(easeInQuad(t, b, c, d));
+    return Math.round(easeInSine(t, b, c, d));
   }
 
   public int linearMotion()
@@ -159,7 +159,7 @@ class ServoTask
       status = ServoTaskStatus.FINISHED;
     }
 
-    return Math.round(easeOutQuad(t, b, c, d));
+    return Math.round(easeOutSine(t, b, c, d));
   }
 
   private int getSign(int n)
