@@ -1,4 +1,4 @@
-enum ServoTaskType
+enum ServoState
 {
   ACCELERATION,
   LINEARMOTION,

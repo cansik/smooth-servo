@@ -1,8 +1,5 @@
 class SmoothServo
 {
-  final int ACCELERATION_TIME = 250;
-  final int DECELERATION_TIME = 250;
-
   Queue<ServoTask> tasks = new Queue<ServoTask>(30);
   ServoTask task = null;
 
@@ -19,17 +16,9 @@ class SmoothServo
     servo.write(servoPosition);
   }
 
-  public void moveTo(int position, int time) throws Exception
+  public void moveTo(int targetPosition, int time)
   {
-    int linearMotionTime = time - (ACCELERATION_TIME + DECELERATION_TIME);
-
-    // add tasks
-    tasks.enqueue(new AccelerationServoTask(position, ACCELERATION_TIME));
-
-    if (linearMotionTime > 0)
-      tasks.enqueue(new AccelerationServoTask(position, linearMotionTime));
-
-    tasks.enqueue(new AccelerationServoTask(position, DECELERATION_TIME));
+    tasks.enqueue(new ServoTask(targetPosition, time));
   }
 
   public void stop()
@@ -40,7 +29,7 @@ class SmoothServo
   {
   }
 
-  public void update() throws Exception
+  public void update()
   {
     //  check if we need a new task from the queue
     if (task == null 
@@ -52,6 +41,7 @@ class SmoothServo
 
       // get new task from queue
       task = tasks.dequeue();
+      task.start(servoPosition);
     }
 
     // update task

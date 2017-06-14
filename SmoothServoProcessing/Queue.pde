@@ -22,10 +22,10 @@ public class Queue<T> {
    * @param elem the element to insert into the queue
    * @throws Exception when the queue is full
    */
-  public void enqueue(T elem) throws Exception {
+  public void enqueue(T elem) {
     // Check if the queue is full and throw exception
     if (head == tail && !empty) {
-      throw new Exception("Cannot enqueue " + elem);
+      println("Cannot enqueue " + elem);
     }
 
     // The queue has space left, enqueue the item
@@ -38,10 +38,10 @@ public class Queue<T> {
    * Removes an element from the queue and returns it.
    * @throws Exception when the queue is empty
    */
-  public T dequeue() throws Exception {
+  public T dequeue() {
     // Check if queue is empty and throw exception
     if (empty) {
-      throw new Exception("The queue is empty");
+      println("The queue is empty");
     }
 
     // The queue is not empty, return element
