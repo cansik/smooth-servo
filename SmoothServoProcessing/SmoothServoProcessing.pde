@@ -31,8 +31,8 @@ void draw()
 
 void keyPressed()
 {
-  int target = (int)random(0, 180);
-  int time = 500;
+  int target = 9; //(int)random(0, 180);
+  int time = 1000;
 
   println("Moving to " + target + "° in " + time + "ms!");
 

@@ -47,5 +47,12 @@ class SmoothServo
     // update task
     servoPosition = task.nextPosition(servoPosition);
     servo.write(servoPosition);
+    
+    // check if task is finished
+    if(task.status == ServoTaskStatus.FINISHED || task.status == ServoTaskStatus.CANCELED)
+    {
+       println("task finished!");
+       task = null; 
+    }
   }
 }
