@@ -41,10 +41,6 @@ class SmoothServo
   {
   }
 
-  public void stop(int time)
-  {
-  }
-
   public void update()
   {
     //  check if we need a new task from the queue

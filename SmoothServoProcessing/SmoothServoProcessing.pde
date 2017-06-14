@@ -12,7 +12,7 @@ void setup()
   size(500, 500, FX2D);
 
   // max speed = 180 ms per 60° -> 0.3333° per 1ms
-  smoothXAxis = new SmoothServo(xAxis, 60.0 / 180.0, 0.03);
+  smoothXAxis = new SmoothServo(xAxis, 60.0 / 180.0, 0.01);
 }
 
 void draw()

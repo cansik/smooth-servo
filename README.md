@@ -14,6 +14,10 @@ The task then is split up into three different tasks:
 
 If now a new task is coming into the queue, but the servo is still moving, the motion task will bit canceled and the servo will run the end task. So there is never a fast stop of the servo.
 
+![Example](readme/motion-example.gif)
+
+*SmoothServo simulation.*
+
 ## Interface
 
 There are advanced commands:
