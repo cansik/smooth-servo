@@ -82,7 +82,8 @@ class SmoothServo
     {
       println("took: " + (millis() - start) + "ms");
       println("task finished!");
-      task = null;
+      println("====> Difference: S: " + task.targetPosition + " I: " + servoPosition + " (" + (task.targetPosition - servoPosition) + ")");
+        task = null;
     }
   }
 }

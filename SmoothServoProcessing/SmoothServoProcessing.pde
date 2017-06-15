@@ -23,7 +23,7 @@ void setup()
   broadCast = new NetAddress("172.20.10.2", 8000);
 
   // max speed = 180 ms per 60° -> 0.3333° per 1ms
-  smoothXAxis = new SmoothServo(xAxis, 60.0 / 180.0, 0.03);
+  smoothXAxis = new SmoothServo(xAxis, 60.0 / 180.0, 0.02);
 }
 
 void draw()
