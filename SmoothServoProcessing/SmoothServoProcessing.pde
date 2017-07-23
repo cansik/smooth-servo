@@ -93,9 +93,14 @@ void drawGraph()
 
 void keyPressed()
 {
-  int target = (int)random(0, 180);
-
-  println("Moving to " + target + "°");
-
-  smoothXAxis.moveTo(target, 0.25);
+  if (key == ' ')
+  {
+    int target = (int)random(0, 180);
+    println("Moving to " + target + "°");
+    smoothXAxis.moveTo(target, 0.25);
+  } else
+  {
+    // stop
+    smoothXAxis.stop();
+  }
 }

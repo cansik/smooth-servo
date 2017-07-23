@@ -102,6 +102,17 @@ class ServoTask
     println("duration: " + duration);
   }
 
+  public void stop()
+  {
+    // difference to break start
+    int position = nextPosition(0);
+    float diffToBreak = linearMotionTarget - position;
+    
+    println("Stopping, current: " + position + " diff: " + diffToBreak);
+    
+    state = ServoState.DECELERATION;
+  }
+
   public int nextPosition(int currentPosition)
   {
     // fix for 0 or 1 motion
