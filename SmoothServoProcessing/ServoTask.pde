@@ -24,7 +24,13 @@ class ServoTask
   float linearMotionPath;
   float decelerationPath;
 
+  float brakeTarget;
+  float brakeTime;
+  float brakePath;
+
   int direction;
+
+  boolean shouldBrake = false;
 
   public ServoTask(int targetPosition, float velocity, float acceleration)
   {
@@ -107,10 +113,21 @@ class ServoTask
     // difference to break start
     int position = nextPosition(0);
     float diffToBreak = linearMotionTarget - position;
-    
-    println("Stopping, current: " + position + " diff: " + diffToBreak);
-    
-    state = ServoState.DECELERATION;
+
+    shouldBrake = true;
+
+    if (state == ServoState.LINEARMOTION)
+    {
+      startTime = millis();
+      startPosition = position;
+      brakeTime = calculateMotionTime(velocity, 0, acceleration);
+      brakePath = calculateMotionPath(velocity, brakeTime, acceleration * -1);
+      brakeTarget = startPosition + (direction * brakePath);
+
+      state = ServoState.BRAKE;
+
+      println("Stopping, current: " + position + " diff: " + diffToBreak);
+    }
   }
 
   public int nextPosition(int currentPosition)
@@ -132,6 +149,9 @@ class ServoTask
 
     case DECELERATION:
       return deceleration();
+
+    case BRAKE:
+      return brake();
     }
 
     return 0;
@@ -150,7 +170,10 @@ class ServoTask
     if (t >= d)
     {
       state = ServoState.LINEARMOTION;
-      println("changing to linear motion state");
+      if (shouldBrake)
+      {
+        stop();
+      }
     }
 
     return Math.round(easeInQuad(t, b, c, d));
@@ -185,6 +208,22 @@ class ServoTask
     float b = linearMotionTarget;
     float c = decelerationTarget - linearMotionTarget;
     float d = decelerationTime;
+
+    // check state switch
+    if (t >= d)
+    {
+      status = ServoTaskStatus.FINISHED;
+    }
+
+    return Math.round(easeOutQuad(t, b, c, d));
+  }
+
+  public int brake()
+  {
+    float t = millis() - startTime;
+    float b = startPosition;
+    float c = brakeTarget - startPosition;
+    float d = brakeTime;
 
     // check state switch
     if (t >= d)
