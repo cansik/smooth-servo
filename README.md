@@ -1,5 +1,5 @@
 # SmoothServo
-An arduino library for smooth servo motion control.
+The idea was to build an arduino library for smooth servo motion control. Currently only the proof of concept in processing has been implemented.
 
 ## Idea
 The idea behind SmoothServo is, to create a library which controls the motion of a servo. Every motion should be start and and with an easing to avoid inertial force.
